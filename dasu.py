@@ -23,12 +23,12 @@ def watashi():
     return str(j.get("user_id") or j.get("id")), j.get("username")
 
 
-def dasu(mp4_path, honbun):
+def dasu(mp4_path, honbun, byou=4.0):
     ig, _ = watashi()
     url = NAMA + urllib.parse.quote(mp4_path)
     j = api(f"{BASE}/{ig}/media",
             {"media_type": "REELS", "video_url": url, "caption": honbun,
-             "thumb_offset": "4000",          # 表紙は4秒目（社長と題が出ている所。0秒は真っ黒）
+             "thumb_offset": str(int(float(byou) * 1000)),   # 表紙＝テロップが一番出ている所
              "access_token": TOK})
     cid = j["id"]
     for _ in range(60):
@@ -61,7 +61,7 @@ def main():
         if t.get("出した") or t["日"] > kyou:
             nokori.append(t); continue
         try:
-            mid = dasu(t["動画"], t["本文"])
+            mid = dasu(t["動画"], t["本文"], t.get("表紙秒", 4.0))
             t["出した"] = datetime.datetime.utcnow().isoformat()[:19]
             t["投稿ID"] = mid
             dashita.append(t["動画"])
