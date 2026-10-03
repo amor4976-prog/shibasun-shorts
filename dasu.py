@@ -11,7 +11,10 @@ NAMA = "https://raw.githubusercontent.com/amor4976-prog/shibasun-shorts/main/"
 
 def api(url, data=None):
     req = urllib.request.Request(url, data=urllib.parse.urlencode(data).encode() if data else None)
-    return json.load(urllib.request.urlopen(req, timeout=300))
+    try:
+        return json.load(urllib.request.urlopen(req, timeout=300))
+    except urllib.error.HTTPError as e:
+        raise SystemExit("インスタが断りました: " + e.read().decode()[:500])
 
 
 def dasu(mp4_path, honbun):
