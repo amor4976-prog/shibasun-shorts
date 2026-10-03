@@ -4,8 +4,8 @@
 import json, os, time, urllib.parse, urllib.request, datetime, sys
 
 V = "v25.0"
+BASE = f"https://graph.instagram.com/{V}"
 TOK = os.environ["IG_TOKEN"]
-IG = os.environ["IG_USER_ID"]
 NAMA = "https://raw.githubusercontent.com/amor4976-prog/shibasun-shorts/main/"
 
 
@@ -17,19 +17,26 @@ def api(url, data=None):
         raise SystemExit("インスタが断りました: " + e.read().decode()[:500])
 
 
+def watashi():
+    """この鍵でつながっているインスタの番号を聞く"""
+    j = api(f"{BASE}/me?fields=user_id,username&access_token={TOK}")
+    return str(j.get("user_id") or j.get("id")), j.get("username")
+
+
 def dasu(mp4_path, honbun):
+    ig, _ = watashi()
     url = NAMA + urllib.parse.quote(mp4_path)
-    j = api(f"https://graph.facebook.com/{V}/{IG}/media",
+    j = api(f"{BASE}/{ig}/media",
             {"media_type": "REELS", "video_url": url, "caption": honbun, "access_token": TOK})
     cid = j["id"]
     for _ in range(60):
         time.sleep(10)
-        st = api(f"https://graph.facebook.com/{V}/{cid}?fields=status_code&access_token={TOK}")
+        st = api(f"{BASE}/{cid}?fields=status_code&access_token={TOK}")
         if st.get("status_code") == "FINISHED":
             break
         if st.get("status_code") == "ERROR":
             raise SystemExit("インスタ側で失敗しました")
-    r = api(f"https://graph.facebook.com/{V}/{IG}/media_publish",
+    r = api(f"{BASE}/{ig}/media_publish",
             {"creation_id": cid, "access_token": TOK})
     return r.get("id")
 
@@ -37,8 +44,8 @@ def dasu(mp4_path, honbun):
 def tameshi():
     """鍵が生きているかだけ見る。中身は出さない。"""
     try:
-        j = api(f"https://graph.instagram.com/{V}/{IG}?fields=username,account_type&access_token={TOK}")
-        print("鍵は生きています。つながっている先:", j.get("username"), j.get("account_type"))
+        ig, name = watashi()
+        print("鍵は生きています。つながっている先:", name)
     except SystemExit as e:
         print("鍵が使えません:", e)
         raise
