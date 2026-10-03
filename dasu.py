@@ -34,6 +34,16 @@ def dasu(mp4_path, honbun):
     return r.get("id")
 
 
+def tameshi():
+    """鍵が生きているかだけ見る。中身は出さない。"""
+    try:
+        j = api(f"https://graph.instagram.com/{V}/{IG}?fields=username,account_type&access_token={TOK}")
+        print("鍵は生きています。つながっている先:", j.get("username"), j.get("account_type"))
+    except SystemExit as e:
+        print("鍵が使えません:", e)
+        raise
+
+
 def main():
     kyou = (datetime.datetime.utcnow() + datetime.timedelta(hours=9)).strftime("%Y-%m-%d")
     y = json.load(open("yotei.json", encoding="utf-8"))
@@ -56,4 +66,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if os.environ.get("TAMESHI"):
+        tameshi()
+    else:
+        main()

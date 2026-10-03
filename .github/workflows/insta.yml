@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: "0 9 * * *"     # 日本時間18時
   workflow_dispatch:
+    inputs:
+      tameshi:
+        description: 鍵が生きているか見るだけ
+        type: boolean
+        default: false
 permissions:
   contents: write
 jobs:
@@ -14,7 +19,7 @@ jobs:
         env:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
-        run: python3 dasu.py
+        run: TAMESHI="${{ inputs.tameshi && '1' || '' }}" python3 dasu.py
       - name: 予約表を書き戻す
         run: |
           git config user.name "shibasun-bot"
