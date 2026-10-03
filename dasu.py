@@ -27,7 +27,9 @@ def dasu(mp4_path, honbun):
     ig, _ = watashi()
     url = NAMA + urllib.parse.quote(mp4_path)
     j = api(f"{BASE}/{ig}/media",
-            {"media_type": "REELS", "video_url": url, "caption": honbun, "access_token": TOK})
+            {"media_type": "REELS", "video_url": url, "caption": honbun,
+             "thumb_offset": "4000",          # 表紙は4秒目（社長と題が出ている所。0秒は真っ黒）
+             "access_token": TOK})
     cid = j["id"]
     for _ in range(60):
         time.sleep(10)
