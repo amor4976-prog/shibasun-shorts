@@ -3,7 +3,7 @@
 """スマホで本文をコピーするページを作る。yotei.json と デスクトップの本文から。"""
 import glob, html, json, os, re
 
-D = os.path.expanduser("~/Desktop/ショート投稿")
+D = os.path.expanduser("~/Desktop/desk/ショート投稿")
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 hon = {}
