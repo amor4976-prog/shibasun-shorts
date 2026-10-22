@@ -8,6 +8,9 @@ on:
         description: 鍵が生きているか見るだけ
         type: boolean
         default: false
+concurrency:
+  group: instagram-publisher
+  cancel-in-progress: false
 permissions:
   contents: write
 jobs:
@@ -15,12 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - name: 今日のぶんを出す
         env:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
         run: TAMESHI="${{ inputs.tameshi && '1' || '' }}" python3 dasu.py
       - name: 予約表を書き戻す
+        if: always()
         run: |
           git config user.name "shibasun-bot"
           git config user.email "bot@shibasun.jp"
